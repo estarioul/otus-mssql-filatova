@@ -68,7 +68,23 @@ select o.OrderID as 'Id заказа',
 from sales.Orders o
 inner join sales.OrderLines ol on o.OrderID=ol.OrderID
 left join Sales.Customers c on o.CustomerID=c.CustomerID
-where (ol.UnitPrice>=100 or ol.Quantity >= 20) and o.PickingCompletedWhen is not null 
+where (ol.UnitPrice>100 or ol.Quantity > 20) and o.PickingCompletedWhen is not null 
+Order by datepart(quarter,  o.OrderDate), convert(varchar,Ceiling(month(o.Orderdate)/4.0)),  o.OrderDate
+
+
+select o.OrderID as 'Id заказа', 
+		 convert(varchar,  o.OrderDate, 104) as 'Дата заказа', 
+		 format(o.OrderDate, 'MMMM', 'ru-ru') as 'Месяц заказа',
+		 datepart(quarter,  o.OrderDate) as 'Квартал', 
+		 convert(varchar,Ceiling(month(o.Orderdate)/4.0)) + N'-ая треть' as 'Треть года',
+		 c.CustomerName as 'Имя заказчика'		 
+from sales.Orders o
+inner join sales.OrderLines ol on o.OrderID=ol.OrderID
+left join Sales.Customers c on o.CustomerID=c.CustomerID
+where (ol.UnitPrice>100 or ol.Quantity > 20) and o.PickingCompletedWhen is not null 
+Order by datepart(quarter,  o.OrderDate), convert(varchar,Ceiling(month(o.Orderdate)/4.0)),  o.OrderDate
+offset 1000 rows 
+fetch next 100 rows only 
 
 
 -- P.S. ol.PickingCompletedWhen эту дату можно повторно не проверять
@@ -93,12 +109,13 @@ inner join Application.DeliveryMethods dm on po.DeliveryMethodID=dm.DeliveryMeth
 inner join Purchasing.Suppliers su on po.SupplierID=su.SupplierID
 left join  Application.People p on po.ContactPersonID=p.PersonID
 where dm.DeliveryMethodName in ('Air Freight', 'Refrigerated Air Freight') 
-and po.IsOrderFinalized=1
+and po.IsOrderFinalized=1 and format(po.ExpectedDeliveryDate,'MMyyyy')='012013' 
 
 
 --P.S. 
 --можно на OR переписать:  dm.DeliveryMethodName = 'Air Freight' or dm.DeliveryMethodName =  'Refrigerated Air Freight'
 --in быстрее or
+--format(po.ExpectedDeliveryDate,'MMyyyy')='012013' ИЛИ (po.ExpectedDeliveryDate>='2013-01-01' and po.ExpectedDeliveryDate<'2013-02-01')
 
 /*
 5. Десять последних продаж (по дате продажи) с именем клиента и именем сотрудника,
