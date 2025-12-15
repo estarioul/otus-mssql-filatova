@@ -99,7 +99,7 @@ inner join cte on ct.TransactionAmount=cte.Amount
 
  ;
  with cte as(
- select top 3 StockItemID from Warehouse.StockItems
+ select top 3 with ties StockItemID from Warehouse.StockItems
  order by UnitPrice DESC 
  )
  select distinct ci.CityID, ci.CityName, p.FullName from sales.Invoices i
@@ -115,7 +115,7 @@ inner join cte on ct.TransactionAmount=cte.Amount
  join sales.Customers cu on i.CustomerID=cu.CustomerID
  join Application.Cities ci on cu.DeliveryCityID=ci.CityID
  left join Application.People p on i.PackedByPersonID=p.PersonID
- where il.StockItemID in ( select top 3 StockItemID from Warehouse.StockItems
+ where il.StockItemID in ( select top 3 with ties StockItemID from Warehouse.StockItems
  order by UnitPrice DESC)
  order by ci.CityName
 
