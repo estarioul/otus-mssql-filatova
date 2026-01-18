@@ -38,7 +38,7 @@ InvoiceMonth | Peeples Valley, AZ | Medicine Lodge, KS | Gasport, NY | Sylvanite
 01.02.2013   |      7             |        3           |      4      |      2        |     1
 -------------+--------------------+--------------------+-------------+--------------+------------
 */
-select datefromparts(YY, MM, 1) as InvoiceMonth, 
+select convert(varchar, datefromparts(YY, MM, 1),104) as InvoiceMonth, 
 		 [Peeples Valley, AZ], 
 		 [Medicine Lodge, KS], 
 		 [Gasport, NY], 
